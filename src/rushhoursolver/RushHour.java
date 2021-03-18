@@ -1,6 +1,9 @@
 package rushhoursolver;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -9,24 +12,46 @@ public class RushHour {
 	public final static int DOWN = 1;
 	public final static int LEFT = 2;
 	public final static int RIGHT = 3;
+	public final static int[] directions = { 0, 1, 2, 3 };
 
 	public final static int SIZE = 6;
 
 	char[][] gameBoard = new char[SIZE][SIZE];
-	/*
-	 * The board is index as follows (col, row): (0,0) (1,0) (2,0) (3,0) (4,0) (5,0)
-	 * (0,1) (1,1) (2,1) (3,1) (4,1) (5,1) (0,2) (1,2) (2,2) (3,2) (4,2) (5,2) (0,3)
-	 * (1,3) (2,3) (3,3) (4,3) (5,3) (0,4) (1,4) (2,4) (3,4) (4,4) (5,4) (0,5) (1,5)
-	 * (2,5) (3,5) (4,5) (5,5)
-	 */
-	HashMap<Character, Car> cars = new HashMap<Character, Car>();
+	ArrayList<Car> cars = new ArrayList<Car>();
+	ArrayList<Move> moveList = new ArrayList<Move>();
+	int moves = 0;
+
+	public RushHour() {
+	}
+
+	public Long hash() {
+		long out = 0;
+		for (Car c : cars) {
+			out += c.getDominantCoordinate();
+			out = out << 3;
+		}
+
+		return out;
+	}
+
+	public RushHour(RushHour rh) {
+		for (int i = 0; i < SIZE; i++)
+			this.gameBoard[i] = Arrays.copyOf(rh.gameBoard[i], rh.gameBoard[i].length);
+
+		for (Car c : rh.cars)
+			this.cars.add(new Car(c));
+		this.moves = rh.moves;
+		for (Move m : rh.moveList)
+			this.moveList.add(new Move(m));
+
+	}
 
 	/**
 	 * @param fileName Reads a board from file and creates the board
 	 * @throws Exception if the file not found or the board is bad
 	 */
 
-	public RushHour(String fileName) throws Exception {
+	public RushHour(String fileName) throws BadBoardException, FileNotFoundException {
 		File f = new File(fileName);
 		Scanner s = new Scanner(f);
 
@@ -54,7 +79,7 @@ public class RushHour {
 			for (int col = 0; col < SIZE; col++) {
 
 				// If we haven't seen this car before
-				if (gameBoard[row][col] != '.' && !cars.containsKey(gameBoard[row][col])) {
+				if (gameBoard[row][col] != '.' && !hasCar(gameBoard[row][col])) {
 					Car tempCar;
 					if (col < 5 && gameBoard[row][col] == gameBoard[row][col + 1]) {
 						tempCar = new Car(gameBoard[row][col], col, row, 1, Car.HORIZONTAL);
@@ -71,16 +96,16 @@ public class RushHour {
 							tempCar.length++;
 						}
 					}
-					cars.put(gameBoard[row][col], tempCar);
+					cars.add(tempCar);
 				}
 			}
 		}
 
-		if (!cars.containsKey('X')) { // There must be an X car
+		if (!hasCar('X')) { // There must be an X car
 			throw new BadBoardException("the board doesn't have an X car");
 		}
 
-		if (cars.get('X').direction != Car.HORIZONTAL) { // X car must be horizonal
+		if (getCar('X').direction != Car.HORIZONTAL) { // X car must be horizonal
 			throw new BadBoardException("the X car must be horizontal");
 		}
 
@@ -90,7 +115,7 @@ public class RushHour {
 			for (char c : row)
 				carSizes.put(c, carSizes.getOrDefault(c, 0) + 1);
 
-		for (Car c : cars.values())
+		for (Car c : cars)
 			if (c.length != carSizes.get(c.name) || c.length == 1)
 				// A degenerate car is either detached or is 1x1
 				throw new BadBoardException("the " + c.name + " car is degenerate");
@@ -104,11 +129,11 @@ public class RushHour {
 	 * @throws IllegalMoveException if the move is illegal
 	 */
 	public void makeMove(char carName, int dir, int length) throws IllegalMoveException {
-		if (!cars.containsKey(carName)) {
+		if (!hasCar(carName)) {
 			throw new IllegalMoveException("Specified car does not exist.");
 		}
 
-		Car c = cars.get(carName);
+		Car c = getCar(carName);
 		if (c.direction == Car.HORIZONTAL && (dir == UP || dir == DOWN)
 				|| (c.direction == Car.VERTICAL && (dir == LEFT || dir == RIGHT))) {
 			throw new IllegalMoveException("Specified direction does not match car's direction");
@@ -154,6 +179,45 @@ public class RushHour {
 
 			c.x = newX;
 		}
+
+		moves++;
+		moveList.add(new Move(carName, dir));
+	}
+
+	public boolean hasCar(char ch) {
+		boolean found = false;
+
+		for (Car c : cars) {
+			if (c.name == ch) {
+				found = true;
+				break;
+			}
+		}
+		return found;
+	}
+
+	public Car getCar(char ch) {
+		Car ca = null;
+		for (Car c : cars)
+			if (c.name == ch)
+				ca = c;
+
+		return ca;
+	}
+
+	public void printMoves() {
+		int start = 0;
+		int dupes = 1;
+		while (start < moveList.size()) {
+			Move currMove = moveList.get(start);
+			while (start + dupes < moveList.size() && moveList.get(start + dupes).equals(currMove))
+				dupes++;
+
+			moveList.get(start).print(dupes);
+			start += dupes;
+			dupes = 1;
+		}
+
 	}
 
 	/**
@@ -161,7 +225,7 @@ public class RushHour {
 	 *         the right edge of the board
 	 */
 	public boolean isSolved() {
-		Car xCar = cars.get('X');
+		Car xCar = getCar('X');
 		return xCar.x + xCar.length >= 6;
 	}
 
