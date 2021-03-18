@@ -1,8 +1,11 @@
-package rushhoursolver;
+package rushhour;
 
 public class Car {
-    final static boolean HORIZONTAL = true;
     final static boolean VERTICAL = false;
+    final static boolean HORIZONTAL = true;
+
+    final static int[] HORIZONAL_DIRECTIONS = { 2, 3 };
+    final static int[] VERTICAL_DIRECTIONS = { 0, 1 };
 
     char name;
     int x;
@@ -32,4 +35,12 @@ public class Car {
         else
             return y;
     }
+
+    public int[] getPossibleDirections() {
+        if (direction == HORIZONTAL)
+            return HORIZONAL_DIRECTIONS;
+        else
+            return VERTICAL_DIRECTIONS;
+    }
+
 }

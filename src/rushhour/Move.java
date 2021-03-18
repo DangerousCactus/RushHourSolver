@@ -1,7 +1,7 @@
-package rushhoursolver;
+package rushhour;
 
 public class Move {
-    private static final char[] intToMove = {'U', 'D', 'L', 'R'};
+    private static final char[] intToMove = { 'U', 'D', 'L', 'R' };
     char carName;
     int direction;
 
@@ -15,13 +15,15 @@ public class Move {
         this.direction = m.direction;
     }
 
-    public void print(int distance){
-        System.out.print(carName);
-        System.out.print(intToMove[direction]);
-        System.out.println(distance);
+    public String print(int distance) {
+        String out = new String();
+        out += carName;
+        out += intToMove[direction];
+        out += distance;
+        return out;
     }
 
-    public boolean equals(Move m){
+    public boolean equals(Move m) {
         return this.carName == m.carName && this.direction == m.direction;
     }
 }

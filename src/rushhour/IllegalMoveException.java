@@ -1,4 +1,4 @@
-package rushhoursolver;
+package rushhour;
 
 public class IllegalMoveException extends Exception {
 

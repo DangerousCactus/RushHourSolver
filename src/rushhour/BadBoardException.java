@@ -1,4 +1,4 @@
-package rushhoursolver;
+package rushhour;
 
 public class BadBoardException extends Exception {
 

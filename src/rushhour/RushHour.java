@@ -1,4 +1,4 @@
-package rushhoursolver;
+package rushhour;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -205,7 +205,9 @@ public class RushHour {
 		return ca;
 	}
 
-	public void printMoves() {
+	public String printMoves() {
+		String out = new String();
+
 		int start = 0;
 		int dupes = 1;
 		while (start < moveList.size()) {
@@ -213,11 +215,11 @@ public class RushHour {
 			while (start + dupes < moveList.size() && moveList.get(start + dupes).equals(currMove))
 				dupes++;
 
-			moveList.get(start).print(dupes);
+			out += moveList.get(start).print(dupes) + '\n';
 			start += dupes;
 			dupes = 1;
 		}
-
+		return out;
 	}
 
 	/**
