@@ -7,8 +7,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import jdk.jfr.events.FileWriteEvent;
-
 public class Solver {
 
     public static void solveFromFile(String inputPath, String outputPath) {
@@ -25,7 +23,7 @@ public class Solver {
         HashSet<Long> seen = new HashSet<>();
 
         states.add(game);
-        seen.add(game.hash());
+        seen.add(game.hash);
 
         while (!states.isEmpty()) {
             for (Car c : states.peek().cars) {
@@ -34,8 +32,8 @@ public class Solver {
                         RushHour nextState = new RushHour(states.peek());
                         nextState.makeMove(c.name, direction, 1);
 
-                        if (!seen.contains(nextState.hash())) {
-                            seen.add(nextState.hash());
+                        if (!seen.contains(nextState.hash)) {
+                            seen.add(nextState.hash);
                             states.add(nextState);
                             if (nextState.isSolved()) {
                                 File f = new File(outputPath);
@@ -48,7 +46,6 @@ public class Solver {
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
-                                // nextState.printMoves();
                                 return;
                             }
                         }

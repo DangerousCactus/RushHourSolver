@@ -12,7 +12,6 @@ public class RushHour {
 	public final static int DOWN = 1;
 	public final static int LEFT = 2;
 	public final static int RIGHT = 3;
-	public final static int[] directions = { 0, 1, 2, 3 };
 
 	public final static int SIZE = 6;
 
@@ -20,11 +19,12 @@ public class RushHour {
 	ArrayList<Car> cars = new ArrayList<Car>();
 	ArrayList<Move> moveList = new ArrayList<Move>();
 	int moves = 0;
+	long hash;
 
 	public RushHour() {
 	}
 
-	public Long hash() {
+	public long computeHash() {
 		long out = 0;
 		for (Car c : cars) {
 			out += c.getDominantCoordinate();
@@ -43,7 +43,7 @@ public class RushHour {
 		this.moves = rh.moves;
 		for (Move m : rh.moveList)
 			this.moveList.add(new Move(m));
-
+		hash = rh.hash;
 	}
 
 	/**
@@ -119,6 +119,8 @@ public class RushHour {
 			if (c.length != carSizes.get(c.name) || c.length == 1)
 				// A degenerate car is either detached or is 1x1
 				throw new BadBoardException("the " + c.name + " car is degenerate");
+
+		hash = computeHash();
 	}
 
 	/**
@@ -182,6 +184,7 @@ public class RushHour {
 
 		moves++;
 		moveList.add(new Move(carName, dir));
+		hash = computeHash();
 	}
 
 	public boolean hasCar(char ch) {
