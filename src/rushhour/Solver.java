@@ -1,6 +1,7 @@
 package rushhour;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashSet;
@@ -9,10 +10,12 @@ import java.util.Queue;
 
 public class Solver {
 
-    public static void solveFromFile(String inputPath, String outputPath) {
+    public static void solveFromFile(String inputPath, String outputPath) throws FileNotFoundException{
         RushHour game = new RushHour();
         try {
             game = new RushHour(inputPath);
+        } catch(FileNotFoundException e){
+            throw e;
         } catch (Exception e) {
             e.printStackTrace();
             return;

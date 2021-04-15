@@ -1,9 +1,12 @@
+import java.io.FileNotFoundException;
+
 import rushhour.Solver;
 
 public class RushHourSolverTester {
     public static void main(String[] args) {
         //System.out.println("Working Directory = " + System.getProperty("user.dir"));
         long startTime = System.nanoTime();
+        try{
         for (int i = 0; i < 10; i++)
             Solver.solveFromFile("testcases/A0" + i + ".txt", "solutions/A0" + i + ".txt");
 
@@ -20,7 +23,9 @@ public class RushHourSolverTester {
 
         for (int i = 1; i <= 5; i++)
             Solver.solveFromFile("testcases/hard" + i + ".txt", "solutions/hard" + i + ".txt");
-
+        } catch (FileNotFoundException e){
+            System.out.println("File Not Found.");
+        }
         long endTime = System.nanoTime();
         System.out.print((endTime - startTime) / 1000000000.0);
         System.out.println(" s");
